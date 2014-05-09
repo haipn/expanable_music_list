@@ -11,6 +11,7 @@ public class MusicFile {
 	private String action;
 	private String status;
 	private String extension;
+	private boolean isCheck;
 
 	public MusicFile() {
 	}
@@ -102,6 +103,14 @@ public class MusicFile {
 
 	public void setExtension(String extension) {
 		this.extension = extension;
+	}
+
+	public boolean isCheck() {
+		return isCheck;
+	}
+
+	public void setCheck(boolean isCheck) {
+		this.isCheck = isCheck;
 	}
 
 }
