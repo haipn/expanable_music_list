@@ -63,9 +63,9 @@ public class StepService extends Service {
 	double maxValue = 0.0;
 	private PowerManager.WakeLock wakeLock;
 	private NotificationManager mNM;
-
+	private long mLastUpdate;
 	private SensorEventListener mStepDetector = new SensorEventListener() {
-		
+
 		@Override
 		public void onSensorChanged(SensorEvent event) {
 
@@ -81,17 +81,21 @@ public class StepService extends Service {
 						float vy = event.values[1];
 						float vz = event.values[2];
 						vSum = Math.sqrt(Math.abs(vx * vy + vx * vz + vy * vz));
-						
-							
-						if (mCallback != null) {
-							mCallback.sensorChanged(vSum);
-							if (vSum > maxValue) {
-								mCallback.maxSensorChanged(vSum);
-								maxValue = vSum;
+
+						if (vSum > maxValue) {
+							maxValue = vSum;
+						}
+						if (System.currentTimeMillis() - mLastUpdate > 1000) {
+							mLastUpdate = System.currentTimeMillis();
+							if (mCallback != null) {
+								mCallback.sensorChanged(vSum);
+								mCallback.maxSensorChanged(maxValue);
 							}
 						}
 					}
+
 				}
+
 			}
 
 		}
@@ -215,6 +219,7 @@ public class StepService extends Service {
 	public void registerCallback(ICallback cb) {
 		Log.i(TAG, "[SERVICE] onRegistercallback");
 		mCallback = cb;
+		mLastUpdate = System.currentTimeMillis();
 		mCallback.maxSensorChanged(maxValue);
 		// mStepDisplayer.passValue();
 		// mPaceListener.passValue();

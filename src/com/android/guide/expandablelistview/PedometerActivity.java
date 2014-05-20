@@ -1,5 +1,7 @@
 package com.android.guide.expandablelistview;
 
+import java.util.Date;
+
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -9,6 +11,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -82,7 +85,10 @@ public class PedometerActivity extends Activity implements
 
 		// Read from preferences if the service was running on the last onPause
 		mIsRunning = mPedometerSettings.isServiceRunning();
-
+		if (mIsRunning)
+			mBtnStartStop.setText("Stop");
+		else 
+			mBtnStartStop.setText("Start");
 		// Start the service if this is considered to be an application start
 		// (last onPause was long ago)
 		if (!mIsRunning && mPedometerSettings.isNewStart()) {
@@ -114,16 +120,13 @@ public class PedometerActivity extends Activity implements
 	}
 
 	private ViewGroup mMenu;
-	boolean isPaused = true;
 
 	public void onPausedClick(View v) {
-		if (isPaused) {
-			isPaused = false;
+		if (mIsRunning) {
 			((TextView) v).setText("Start");
 			unbindStepService();
 			stopStepService();
 		} else {
-			isPaused = true;
 			((TextView) v).setText("Stop");
 			startStepService();
 			bindStepService();
@@ -137,7 +140,7 @@ public class PedometerActivity extends Activity implements
 			mBtnStartStop.setText("Start");
 
 		}
-		isPaused = false;
+		mIsRunning = false;
 		mTvCurrent.setText("0");
 		mTvMax.setText("0");
 	}
@@ -189,6 +192,8 @@ public class PedometerActivity extends Activity implements
 	public void sensorChanged(double value) {
 		// Log.d("haipn", "sensor changeed:" + value);
 		mTvCurrent.setText(value + "");
+		String date = DateFormat.format("EEE hh:mm:ss", new Date()).toString();
+		mTvDate.setText(date);
 	}
 
 	@Override
